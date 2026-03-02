@@ -7,6 +7,32 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     git \
     gosu \
+    jq \
+    wget \
+    unzip \
+    zip \
+    tar \
+    gzip \
+    bzip2 \
+    xz-utils \
+    sed \
+    gawk \
+    grep \
+    findutils \
+    coreutils \
+    diffutils \
+    patch \
+    less \
+    tree \
+    file \
+    bc \
+    vim-tiny \
+    nano \
+    openssh-client \
+    rsync \
+    httpie \
+    python3 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22 (required by OpenClaw)
