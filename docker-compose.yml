@@ -1,0 +1,44 @@
+services:
+  openclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openclaw
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      # Agent state — isolated named volume (config, memory, sessions)
+      - openclaw_state:/home/openclaw/.openclaw
+      # Workspace — bind mount so you can drop files in and see agent output
+      - ./workspace:/home/openclaw/workspace
+    env_file:
+      - .env
+    environment:
+      - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
+    stdin_open: true
+    tty: true
+
+  # Interactive CLI service for running openclaw commands
+  cli:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openclaw-cli
+    profiles:
+      - cli
+    volumes:
+      - openclaw_state:/home/openclaw/.openclaw
+      - ./workspace:/home/openclaw/workspace
+    env_file:
+      - .env
+    environment:
+      - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
+    stdin_open: true
+    tty: true
+    entrypoint: ["openclaw"]
+
+# Named volumes - isolated from host filesystem
+volumes:
+  openclaw_state:
+    name: openclaw_state

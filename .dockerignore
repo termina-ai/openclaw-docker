@@ -1,0 +1,8 @@
+README.md
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+*.tar.gz
+workspace/
