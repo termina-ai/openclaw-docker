@@ -5,7 +5,7 @@ Run [OpenClaw](https://openclaw.ai/) in a Docker container with isolated persist
 ## Features
 
 - OpenClaw runs completely containerized
-- Agent workspace bind-mounted to `./workspace/` for easy access
+- Multi-agent support with shared `./workspaces/` bind mount
 - Makefile targets for easy management
 - Beta version installed via official installer
 
@@ -90,6 +90,45 @@ Each agent gets its own subdirectory:
 ├── newsy/      # news agent
 └── <agent-id>/ # any future agent
 ```
+
+## Adding Agents
+
+All agent workspaces live under `./workspaces/<agent-id>/` so they're accessible from the host. To add a new agent, shell into the container and update the config:
+
+```bash
+make shell
+```
+
+Then inside the container:
+
+```bash
+# Add the agent to the config
+openclaw config set agents.list '[
+  {"id":"main","workspace":"/home/openclaw/workspaces/main","agentDir":"/home/openclaw/.openclaw/agents/main/agent"},
+  {"id":"your-agent","workspace":"/home/openclaw/workspaces/your-agent","agentDir":"/home/openclaw/.openclaw/agents/your-agent/agent"}
+]'
+
+# Create the workspace and add personality files
+mkdir -p /home/openclaw/workspaces/your-agent
+cat > /home/openclaw/workspaces/your-agent/SOUL.md << 'EOF'
+# Your Agent Name
+Description of personality and behavior...
+EOF
+```
+
+Restart the gateway to pick up the new agent:
+
+```bash
+make restart
+```
+
+Talk to a specific agent:
+
+```bash
+make cmd ARGS="agent --agent your-agent -m 'hello'"
+```
+
+Or bind it to a channel (Telegram, Slack, etc.) via `bindings` in `openclaw.json`. See [multi-agent docs](https://docs.openclaw.ai/concepts/multi-agent).
 
 ## Ports
 
