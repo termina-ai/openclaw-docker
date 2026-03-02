@@ -9,11 +9,16 @@ RUN apt-get update && apt-get install -y \
     gosu \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js 22 (required by OpenClaw)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
 # Create non-root user
 RUN useradd -m -s /bin/bash openclaw
 
-# Install OpenClaw beta (tolerate post-install interactive onboarding failure)
-RUN curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta || true
+# Install OpenClaw via npm (bypasses openclaw.ai install script)
+RUN npm install -g openclaw@latest
 
 ENV HOME=/home/openclaw
 ENV PATH="/usr/local/bin:/home/openclaw/.local/bin:/home/openclaw/.openclaw/bin:${PATH}"
