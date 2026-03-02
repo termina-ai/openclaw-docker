@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: openclaw
     restart: unless-stopped
-    network_mode: host
+    ports:
+      - "18789:18789"
     volumes:
       # Entire .openclaw context — config, memory, credentials, and all agent workspaces
       - ./openclaw-data:/home/openclaw/.openclaw
