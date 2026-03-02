@@ -7,6 +7,7 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
+      - ./config:/home/openclaw/.openclaw
       - ./workspaces:/home/openclaw/workspaces
     env_file:
       - .env
@@ -25,6 +26,7 @@ services:
     profiles:
       - cli
     volumes:
+      - ./config:/home/openclaw/.openclaw
       - ./workspaces:/home/openclaw/workspaces
     env_file:
       - .env

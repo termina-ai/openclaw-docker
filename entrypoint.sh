@@ -2,6 +2,13 @@
 set -e
 
 CONFIG="/home/openclaw/.openclaw/openclaw.json"
+SEED="/home/openclaw/.openclaw-seed"
+
+# --- First-run seed ---
+# Bind mount starts empty; copy baked config from the image.
+if [ ! -f "$CONFIG" ] && [ -d "$SEED" ]; then
+  cp -a "$SEED"/. /home/openclaw/.openclaw/
+fi
 
 # --- Match host UID/GID ---
 # Remap the openclaw user to the host user's UID/GID so bind-mounted
