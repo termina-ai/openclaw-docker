@@ -26,7 +26,7 @@ ENV PATH="/usr/local/bin:/home/openclaw/.local/bin:/home/openclaw/.openclaw/bin:
 RUN openclaw --version
 
 # Set up directories and ownership
-RUN mkdir -p /home/openclaw/.openclaw /home/openclaw/workspace \
+RUN mkdir -p /home/openclaw/.openclaw /home/openclaw/workspaces/main \
     && chown -R openclaw:openclaw /home/openclaw
 
 # Copy entrypoint (runs as root, fixes permissions, then drops to openclaw user)
@@ -48,7 +48,7 @@ RUN openclaw onboard --non-interactive \
     --gateway-auth token \
     --gateway-token onboard-placeholder \
     --auth-choice skip \
-    --workspace /home/openclaw/workspace \
+    --workspace /home/openclaw/workspaces/main \
     --no-install-daemon \
     --skip-channels \
     --skip-skills \
@@ -65,10 +65,6 @@ RUN chmod 700 /home/openclaw/.openclaw \
 
 # Run doctor to fix any remaining issues
 RUN openclaw doctor --non-interactive --repair || true
-
-# Save baked config as a seed — bind mounts shadow .openclaw with an empty dir,
-# so the entrypoint copies this seed on first run.
-RUN cp -a /home/openclaw/.openclaw /home/openclaw/.openclaw-seed
 
 # Switch back to root — entrypoint fixes bind mount permissions then drops to openclaw via gosu
 USER root

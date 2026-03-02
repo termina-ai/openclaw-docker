@@ -67,7 +67,7 @@ dashboard:
 cmd:
 	docker compose run --rm cli $(ARGS)
 
-# Remove containers (WARNING: add --volumes to also destroy openclaw-data/)
+# Remove containers (WARNING: add -v to also destroy internal state)
 clean:
 	docker compose down
 

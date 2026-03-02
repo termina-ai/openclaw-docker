@@ -5,7 +5,7 @@ Run [OpenClaw](https://openclaw.ai/) in a Docker container with isolated persist
 ## Features
 
 - OpenClaw runs completely containerized
-- Persistent storage via Docker named volumes (isolated from host filesystem)
+- Agent workspace bind-mounted to `./workspace/` for easy access
 - Makefile targets for easy management
 - Beta version installed via official installer
 
@@ -79,19 +79,16 @@ make clean-all   # Also remove Docker images
 
 ## Storage
 
-All OpenClaw data is bind-mounted from `./openclaw-data/` on the host to `~/.openclaw` inside the container. This single directory contains everything:
+- **Config, credentials, memory** — stored inside the container (persists across restarts, destroyed on `make clean`)
+- **Agent workspaces** — bind-mounted from `./workspaces/` on the host to `/home/openclaw/workspaces` in the container
 
-- `openclaw.json` — central configuration
-- `workspace/` — shared workspace root
-- `workspace/agents-workspaces/<id>/` — per-agent workspaces
-- `memory/` — LanceDB memory database
-- `credentials/` — stored credentials
-- `skills/` — installed skills
+Each agent gets its own subdirectory:
 
-Because it's a bind mount, you can browse and back up agent workspaces directly from the host:
-
-```bash
-ls ./openclaw-data/workspace/agents-workspaces/
+```
+./workspaces/
+├── main/       # default agent
+├── newsy/      # news agent
+└── <agent-id>/ # any future agent
 ```
 
 ## Ports
