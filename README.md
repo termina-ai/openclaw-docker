@@ -110,7 +110,8 @@ cp .env.example .env
 
 Start by answering all its onboarding questions: what it should call you, what it's called, what tone you prefer
 
-```Download this skill: https://github.com/blader/humanizer. When you write content for me, whether its messages, emails, essays, or more, run the content through this skill to make it sound less AI-written.
+```
+Download this skill: https://github.com/blader/humanizer. When you write content for me, whether its messages, emails, essays, or more, run the content through this skill to make it sound less AI-written.
 ```
 
 ```
