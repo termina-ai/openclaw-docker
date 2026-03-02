@@ -14,9 +14,10 @@ RUN useradd -m -s /bin/bash openclaw
 
 # Install OpenClaw beta (tolerate post-install interactive onboarding failure)
 RUN curl -fsSL https://openclaw.ai/install.sh | bash -s -- --beta || true
-RUN openclaw --version
 
 ENV PATH="/usr/local/bin:/home/openclaw/.local/bin:/home/openclaw/.openclaw/bin:${PATH}"
+
+RUN openclaw --version
 
 # Set up directories and ownership
 RUN mkdir -p /home/openclaw/.openclaw /home/openclaw/workspace \
