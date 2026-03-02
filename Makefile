@@ -3,6 +3,10 @@
 # Default target
 .DEFAULT_GOAL := help
 
+# Derive host UID/GID from the calling user's session
+export HOST_UID := $(shell id -u)
+export HOST_GID := $(shell id -g)
+
 # Build the Docker image
 build:
 	docker compose build
@@ -63,10 +67,9 @@ dashboard:
 cmd:
 	docker compose run --rm cli $(ARGS)
 
-# Remove containers and volumes (WARNING: destroys all OpenClaw data)
+# Remove containers (WARNING: add --volumes to also destroy openclaw-data/)
 clean:
-	docker compose down -v
-	docker volume rm -f openclaw_state openclaw_workspace 2>/dev/null || true
+	docker compose down
 
 # Remove everything including the image
 clean-all: clean

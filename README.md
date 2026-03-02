@@ -11,8 +11,12 @@ Run [OpenClaw](https://openclaw.ai/) in a Docker container with isolated persist
 
 ## Prerequisites
 
-- Docker
-- Docker Compose
+- **Docker Engine** (v20.10+)
+- **Docker Buildx** — required for `COPY --chmod`. Install via `docker buildx install` or see [docs](https://docs.docker.com/build/buildx/install/)
+- **Docker BuildKit** — must be enabled. Set `export DOCKER_BUILDKIT=1` or add `{ "features": { "buildkit": true } }` to your Docker daemon config. See [docs](https://docs.docker.com/go/buildkit/)
+- **Docker Compose** (v2 recommended, v1 works)
+- **Make** (optional — you can run the `docker compose` commands directly)
+- An API key for at least one supported model provider (Anthropic, OpenAI, or OpenRouter)
 
 ## Quick Start
 
@@ -75,25 +79,19 @@ make clean-all   # Also remove Docker images
 
 ## Storage
 
-All OpenClaw data is stored in Docker named volumes:
+All OpenClaw data is bind-mounted from `./openclaw-data/` on the host to `~/.openclaw` inside the container. This single directory contains everything:
 
-- `openclaw_state` - Configuration, memory, and credentials (`~/.openclaw` inside container)
-- `openclaw_workspace` - Workspace files (`~/workspace` inside container)
+- `openclaw.json` — central configuration
+- `workspace/` — shared workspace root
+- `workspace/agents-workspaces/<id>/` — per-agent workspaces
+- `memory/` — LanceDB memory database
+- `credentials/` — stored credentials
+- `skills/` — installed skills
 
-These volumes are completely isolated from your host filesystem. OpenClaw cannot access any files outside its container.
-
-To backup your OpenClaw data:
-
-```bash
-docker run --rm -v openclaw_state:/data -v $(pwd):/backup alpine tar czf /backup/openclaw_state.tar.gz -C /data .
-docker run --rm -v openclaw_workspace:/data -v $(pwd):/backup alpine tar czf /backup/openclaw_workspace.tar.gz -C /data .
-```
-
-To restore:
+Because it's a bind mount, you can browse and back up agent workspaces directly from the host:
 
 ```bash
-docker run --rm -v openclaw_state:/data -v $(pwd):/backup alpine tar xzf /backup/openclaw_state.tar.gz -C /data
-docker run --rm -v openclaw_workspace:/data -v $(pwd):/backup alpine tar xzf /backup/openclaw_workspace.tar.gz -C /data
+ls ./openclaw-data/workspace/agents-workspaces/
 ```
 
 ## Ports
@@ -102,4 +100,8 @@ docker run --rm -v openclaw_workspace:/data -v $(pwd):/backup alpine tar xzf /ba
 
 ## Configuration
 
-Environment variables can be added to `docker-compose.yml` under the `environment` section.
+Copy `.env.example` to `.env` and fill in your API keys:
+
+```bash
+cp .env.example .env
+```

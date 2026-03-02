@@ -23,8 +23,9 @@ RUN mkdir -p /home/openclaw/.openclaw /home/openclaw/workspace \
     && chown -R openclaw:openclaw /home/openclaw
 
 # Copy entrypoint (runs as root, fixes permissions, then drops to openclaw user)
-COPY entrypoint.sh /opt/openclaw/entrypoint.sh
-RUN chmod +x /opt/openclaw/entrypoint.sh
+COPY --chmod=755 entrypoint.sh /opt/openclaw/entrypoint.sh
+# Strip Windows line endings if present (fixes "no such file or directory" exec errors)
+RUN sed -i 's/\r$//' /opt/openclaw/entrypoint.sh
 
 USER openclaw
 WORKDIR /home/openclaw
@@ -58,9 +59,9 @@ RUN chmod 700 /home/openclaw/.openclaw \
 # Run doctor to fix any remaining issues
 RUN openclaw doctor --non-interactive --repair || true
 
-# Declare volumes AFTER config is written so Docker seeds new volumes with it
-VOLUME ["/home/openclaw/.openclaw"]
-VOLUME ["/home/openclaw/workspace"]
+# Save baked config as a seed — bind mounts shadow .openclaw with an empty dir,
+# so the entrypoint copies this seed on first run.
+RUN cp -a /home/openclaw/.openclaw /home/openclaw/.openclaw-seed
 
 # Switch back to root — entrypoint fixes bind mount permissions then drops to openclaw via gosu
 USER root

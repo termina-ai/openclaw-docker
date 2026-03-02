@@ -1,3 +1,4 @@
 .env
 *.tar.gz
 workspace/
+openclaw-data/

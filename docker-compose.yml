@@ -5,17 +5,16 @@ services:
       dockerfile: Dockerfile
     container_name: openclaw
     restart: unless-stopped
-    ports:
-      - "18789:18789"
+    network_mode: host
     volumes:
-      # Agent state — isolated named volume (config, memory, sessions)
-      - openclaw_state:/home/openclaw/.openclaw
-      # Workspace — bind mount so you can drop files in and see agent output
-      - ./workspace:/home/openclaw/workspace
+      # Entire .openclaw context — config, memory, credentials, and all agent workspaces
+      - ./openclaw-data:/home/openclaw/.openclaw
     env_file:
       - .env
     environment:
       - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
     stdin_open: true
     tty: true
 
@@ -28,17 +27,13 @@ services:
     profiles:
       - cli
     volumes:
-      - openclaw_state:/home/openclaw/.openclaw
-      - ./workspace:/home/openclaw/workspace
+      - ./openclaw-data:/home/openclaw/.openclaw
     env_file:
       - .env
     environment:
       - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
+      - HOST_UID=${HOST_UID:-1000}
+      - HOST_GID=${HOST_GID:-1000}
     stdin_open: true
     tty: true
     entrypoint: ["openclaw"]
-
-# Named volumes - isolated from host filesystem
-volumes:
-  openclaw_state:
-    name: openclaw_state
