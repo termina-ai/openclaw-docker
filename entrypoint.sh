@@ -18,7 +18,6 @@ HOST_GID="${HOST_GID:-1000}"
 if [ "$(id -u openclaw)" != "$HOST_UID" ] || [ "$(id -g openclaw)" != "$HOST_GID" ]; then
   groupmod -o -g "$HOST_GID" openclaw 2>/dev/null || true
   usermod -o -u "$HOST_UID" -g "$HOST_GID" openclaw
-  chown -R "$HOST_UID:$HOST_GID" /home/openclaw
 fi
 
 # --- Auto-detect model from available API keys ---
@@ -62,6 +61,12 @@ fi
 if [ -n "$OPENCLAW_MODEL" ]; then
   gosu openclaw openclaw models set "$OPENCLAW_MODEL" 2>/dev/null || true
 fi
+
+# --- Fix ownership after all root-level modifications ---
+# Must run after config patching (which runs as root) so files end up
+# owned by the openclaw user, not root. Critical on macOS where
+# HOST_UID != 1000 and Docker Desktop's VirtioFS is in play.
+chown -R "$HOST_UID:$HOST_GID" /home/openclaw
 
 # Drop to openclaw user and exec the CMD
 exec gosu openclaw "$@"
