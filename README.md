@@ -150,25 +150,9 @@ Or bind it to a channel (Telegram, Slack, etc.) via `bindings` in `openclaw.json
 
 ## Configuration
 
-Copy `.env.example` to `.env` and fill in your API keys:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and set:
+Run `make init` to create `.env` with an auto-generated gateway token, then add your API key:
 
 - **`ANTHROPIC_API_KEY`** or **`OPENAI_API_KEY`** — at least one model provider
-- **`OPENCLAW_GATEWAY_TOKEN`** — generate with `openssl rand -hex 32`
-
-## macOS (Docker Desktop)
-
-macOS support is automatic — the Makefile detects your OS and layers `docker-compose.mac.yml` on top of the base config. This:
-
-- Switches to `bridge` networking with an explicit port mapping
-- Binds the port to `127.0.0.1` so only your machine can reach the gateway
-
-No additional setup is needed. All `make` commands work the same on both platforms.
 
 ## Setup Prompts
 
