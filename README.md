@@ -163,20 +163,12 @@ Edit `.env` and set:
 
 ## macOS (Docker Desktop)
 
-Docker Desktop for Mac does not support `network_mode: host`. The included `docker-compose.override.yml` automatically handles this by:
+macOS support is automatic — the Makefile detects your OS and layers `docker-compose.mac.yml` on top of the base config. This:
 
-- Switching to `bridge` networking with an explicit port mapping
-- Binding the port to `127.0.0.1` so only your machine can reach the gateway
+- Switches to `bridge` networking with an explicit port mapping
+- Binds the port to `127.0.0.1` so only your machine can reach the gateway
 
-No additional setup is needed — Docker Compose merges the override file automatically.
-
-To start fresh on Mac:
-
-```bash
-make down && rm -rf config/ workspaces/ && make build && make up
-```
-
-If you're on **Linux**, the override has no effect when `network_mode: host` is already working. To disable it, remove or rename `docker-compose.override.yml`.
+No additional setup is needed. All `make` commands work the same on both platforms.
 
 ## Setup Prompts
 

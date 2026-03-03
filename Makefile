@@ -7,6 +7,15 @@
 export HOST_UID := $(shell id -u)
 export HOST_GID := $(shell id -g)
 
+# Auto-detect OS: on macOS (Darwin), layer docker-compose.mac.yml for
+# localhost-bound port mapping and bridge networking.
+UNAME := $(shell uname)
+ifeq ($(UNAME),Darwin)
+  COMPOSE := docker compose -f docker-compose.yml -f docker-compose.mac.yml
+else
+  COMPOSE := docker compose
+endif
+
 # Initialize .env from .env.example and generate a gateway token
 init:
 	@if [ -f .env ]; then \
@@ -25,11 +34,11 @@ init:
 
 # Build the Docker image
 build:
-	docker compose build
+	$(COMPOSE) build
 
 # Start the OpenClaw gateway in the background
 up:
-	docker compose up -d
+	$(COMPOSE) up -d
 	@TOKEN=$$(grep OPENCLAW_GATEWAY_TOKEN .env 2>/dev/null | cut -d= -f2); \
 	echo ""; \
 	echo "OpenClaw is running."; \
@@ -42,11 +51,11 @@ up:
 
 # Start the OpenClaw gateway in the foreground (with logs)
 up-fg:
-	docker compose up
+	$(COMPOSE) up
 
 # Stop the OpenClaw gateway
 down:
-	docker compose down
+	$(COMPOSE) down
 
 # Aliases for up/down
 start: up
@@ -54,35 +63,35 @@ stop: down
 
 # Restart the gateway
 restart:
-	docker compose restart
+	$(COMPOSE) restart
 
 # View logs (follow mode)
 logs:
-	docker compose logs -f openclaw
+	$(COMPOSE) logs -f openclaw
 
 # View recent logs (last 100 lines)
 logs-tail:
-	docker compose logs --tail=100 openclaw
+	$(COMPOSE) logs --tail=100 openclaw
 
 # Open an interactive shell in the running container
 shell:
-	docker compose exec openclaw bash
+	$(COMPOSE) exec openclaw bash
 
 # Run an interactive OpenClaw CLI session
 cli:
-	docker compose run --rm cli
+	$(COMPOSE) run --rm cli
 
 # Run the OpenClaw onboarding wizard
 onboard:
-	docker compose run --rm cli onboard
+	$(COMPOSE) run --rm cli onboard
 
 # Check OpenClaw status
 status:
-	docker compose run --rm cli status
+	$(COMPOSE) run --rm cli status
 
 # Run openclaw doctor to check configuration
 doctor:
-	docker compose run --rm cli doctor
+	$(COMPOSE) run --rm cli doctor
 
 # Open the dashboard (prints tokenized URL)
 dashboard:
@@ -90,11 +99,11 @@ dashboard:
 
 # Run any openclaw command (usage: make cmd ARGS="your command here")
 cmd:
-	docker compose run --rm cli $(ARGS)
+	$(COMPOSE) run --rm cli $(ARGS)
 
 # Remove containers (WARNING: add -v to also destroy internal state)
 clean:
-	docker compose down
+	$(COMPOSE) down
 
 # Remove everything including the image
 clean-all: clean
