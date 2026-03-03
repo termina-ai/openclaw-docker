@@ -142,6 +142,28 @@ Copy `.env.example` to `.env` and fill in your API keys:
 cp .env.example .env
 ```
 
+Edit `.env` and set:
+
+- **`ANTHROPIC_API_KEY`** or **`OPENAI_API_KEY`** — at least one model provider
+- **`OPENCLAW_GATEWAY_TOKEN`** — generate with `openssl rand -hex 32`
+
+## macOS (Docker Desktop)
+
+Docker Desktop for Mac does not support `network_mode: host`. The included `docker-compose.override.yml` automatically handles this by:
+
+- Switching to `bridge` networking with an explicit port mapping
+- Binding the port to `127.0.0.1` so only your machine can reach the gateway
+
+No additional setup is needed — Docker Compose merges the override file automatically.
+
+To start fresh on Mac:
+
+```bash
+make down && rm -rf config/ workspaces/ && make build && make up
+```
+
+If you're on **Linux**, the override has no effect when `network_mode: host` is already working. To disable it, remove or rename `docker-compose.override.yml`.
+
 ## Setup Prompts
 
 Start by answering all its onboarding questions: what it should call you, what it's called, what tone you prefer
