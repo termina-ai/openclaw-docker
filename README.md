@@ -150,11 +150,9 @@ Or bind it to a channel (Telegram, Slack, etc.) via `bindings` in `openclaw.json
 
 ## Configuration
 
-Copy `.env.example` to `.env` and fill in your API keys:
+Run `make init` to create `.env` with an auto-generated gateway token, then add your API key:
 
-```bash
-cp .env.example .env
-```
+- **`ANTHROPIC_API_KEY`** or **`OPENAI_API_KEY`** — at least one model provider
 
 ## Setup Prompts
 

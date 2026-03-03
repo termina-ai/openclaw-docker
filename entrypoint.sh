@@ -38,9 +38,19 @@ if [ -f "$CONFIG" ]; then
     if (process.env.OPENCLAW_GATEWAY_TOKEN) {
       cfg.gateway.auth.token = process.env.OPENCLAW_GATEWAY_TOKEN;
     }
-    // Docker: skip device pairing — browser connects from bridge IP, not loopback
+    // Docker NAT rewrites the source IP, so the gateway sees connections from
+    // Docker's internal network instead of 127.0.0.1. Trust these ranges so
+    // the gateway treats them as local.
+    cfg.gateway.trustedProxies = ['192.168.65.0/24', '172.16.0.0/12', '10.0.0.0/8'];
+    // Device pairing requires the connection to come from localhost, which is
+    // impossible through Docker's NAT. Disable it — token auth still applies,
+    // and the port is bound to 127.0.0.1 so only this machine can connect.
     if (!cfg.gateway.controlUi) cfg.gateway.controlUi = {};
     cfg.gateway.controlUi.dangerouslyDisableDeviceAuth = true;
+    // Onboarding defaults to "messaging" profile which only allows chat.
+    // Override to "full" so the agent can edit files, run commands, etc.
+    if (!cfg.tools) cfg.tools = {};
+    cfg.tools.profile = 'full';
     // Allow both http and https origins (macOS browsers may auto-upgrade to https)
     const port = (cfg.gateway && cfg.gateway.port) || 18789;
     cfg.gateway.controlUi.allowedOrigins = [
