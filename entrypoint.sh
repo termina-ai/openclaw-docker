@@ -38,6 +38,11 @@ if [ -f "$CONFIG" ]; then
     // and the port is bound to 127.0.0.1 so only this machine can connect.
     if (!cfg.gateway.controlUi) cfg.gateway.controlUi = {};
     cfg.gateway.controlUi.dangerouslyDisableDeviceAuth = true;
+    cfg.gateway.controlUi.allowedOrigins = ['http://localhost:18789', 'http://127.0.0.1:18789'];
+    // Onboarding defaults to "messaging" profile which only allows chat.
+    // Override to "full" so the agent can edit files, run commands, etc.
+    if (!cfg.tools) cfg.tools = {};
+    cfg.tools.profile = 'full';
     fs.writeFileSync('$CONFIG', JSON.stringify(cfg, null, 2) + '\n');
   "
 fi
