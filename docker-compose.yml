@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
     container_name: openclaw
     restart: unless-stopped
-    network_mode: host
+    ports:
+      - "18789:18789"
     volumes:
       - ./config:/home/openclaw/.openclaw
       - ./workspaces:/home/openclaw/workspaces

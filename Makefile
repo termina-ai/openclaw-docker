@@ -1,4 +1,4 @@
-.PHONY: build up down start stop restart logs shell cli onboard status clean help
+.PHONY: init build up down start stop restart logs shell cli onboard status clean help
 
 # Default target
 .DEFAULT_GOAL := help
@@ -7,6 +7,22 @@
 export HOST_UID := $(shell id -u)
 export HOST_GID := $(shell id -g)
 
+# Initialize .env from .env.example and generate a gateway token
+init:
+	@if [ -f .env ]; then \
+		echo "Error: .env already exists. Remove it first if you want to re-initialize."; \
+		exit 1; \
+	fi
+	cp .env.example .env
+	@TOKEN=$$(openssl rand -hex 32); \
+	sed -i.bak "s/OPENCLAW_GATEWAY_TOKEN=__GENERATED_BY_MAKE_INIT__/OPENCLAW_GATEWAY_TOKEN=$$TOKEN/" .env && rm -f .env.bak; \
+	echo ""; \
+	echo "Created .env with auto-generated gateway token."; \
+	echo ""; \
+	echo "Next step: edit .env and add your API key (Anthropic or OpenAI)."; \
+	echo "  $${EDITOR:-nano} .env"; \
+	echo ""
+
 # Build the Docker image
 build:
 	docker compose build
@@ -14,6 +30,15 @@ build:
 # Start the OpenClaw gateway in the background
 up:
 	docker compose up -d
+	@TOKEN=$$(grep OPENCLAW_GATEWAY_TOKEN .env 2>/dev/null | cut -d= -f2); \
+	echo ""; \
+	echo "OpenClaw is running."; \
+	echo ""; \
+	echo "  Dashboard: http://localhost:18789/?token=$$TOKEN"; \
+	echo ""; \
+	echo "First time? Paste this token into the OpenClaw UI settings when prompted:"; \
+	echo "  $$TOKEN"; \
+	echo ""
 
 # Start the OpenClaw gateway in the foreground (with logs)
 up-fg:
@@ -83,6 +108,7 @@ help:
 	@echo "Usage: make <target>"
 	@echo ""
 	@echo "Targets:"
+	@echo "  init       Create .env and generate gateway token"
 	@echo "  build      Build the Docker image"
 	@echo "  up         Start the gateway in the background"
 	@echo "  up-fg      Start the gateway in the foreground"
