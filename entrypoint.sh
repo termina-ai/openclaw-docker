@@ -42,6 +42,14 @@ if [ -f "$CONFIG" ]; then
     // Docker: skip device pairing — browser connects from bridge IP, not loopback
     if (!cfg.gateway.controlUi) cfg.gateway.controlUi = {};
     cfg.gateway.controlUi.dangerouslyDisableDeviceAuth = true;
+    // Allow both http and https origins (macOS browsers may auto-upgrade to https)
+    const port = (cfg.gateway && cfg.gateway.port) || 18789;
+    cfg.gateway.controlUi.allowedOrigins = [
+      'http://localhost:' + port,
+      'http://127.0.0.1:' + port,
+      'https://localhost:' + port,
+      'https://127.0.0.1:' + port,
+    ];
     // Enable reasoning/thinking by default for all models that support it
     if (!cfg.agents) cfg.agents = {};
     if (!cfg.agents.defaults) cfg.agents.defaults = {};
