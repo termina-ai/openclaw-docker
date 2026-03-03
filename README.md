@@ -1,38 +1,52 @@
 # OpenClaw Docker
 
-Run [OpenClaw](https://openclaw.ai/) in a Docker container with isolated persistent storage.
+Run [OpenClaw](https://openclaw.ai/) in Docker — from zero to a running gateway in 5 steps.
 
-## Features
+## Quickstart
 
-- OpenClaw runs completely containerized
-- Multi-agent support with shared `./workspaces/` bind mount
-- Makefile targets for easy management
-- Beta version installed via official installer
+### 1. Install prerequisites
 
-## Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) (includes Compose)
+- [Git](https://git-scm.com/)
 
-- **Docker Engine** (v20.10+)
-- **Docker Buildx** — required for `COPY --chmod`. Install via `docker buildx install` or see [docs](https://docs.docker.com/build/buildx/install/)
-- **Docker BuildKit** — must be enabled. Set `export DOCKER_BUILDKIT=1` or add `{ "features": { "buildkit": true } }` to your Docker daemon config. See [docs](https://docs.docker.com/go/buildkit/)
-- **Docker Compose** (v2 recommended, v1 works)
-- **Make** (optional — you can run the `docker compose` commands directly)
-- An API key for at least one supported model provider (Anthropic, OpenAI, or OpenRouter)
+**macOS one-liner:** `brew install --cask docker && brew install git`
 
-## Quick Start
+### 2. Clone the repo
 
 ```bash
-# Build the image
-make build
-
-# Run onboarding wizard (first time setup)
-make onboard
-
-# Start the gateway
-make up
-
-# Check status
-make status
+git clone https://github.com/termina-ai/openclaw-docker.git
+cd openclaw-docker
 ```
+
+### 3. Initialize
+
+```bash
+make init        # creates .env and generates a gateway token
+```
+
+### 4. Add your API keys
+
+**Already have API keys?** Edit `.env` and paste them in, then skip to step 5.
+
+```bash
+nano .env        # or use your preferred editor
+```
+
+You only need **one** of these:
+
+- [Anthropic API key](https://console.anthropic.com/)
+- [OpenAI API key](https://platform.openai.com/api-keys)
+
+**Don't have API keys yet?** Skip this step — run `make onboard` after step 5 and follow the interactive setup wizard.
+
+### 5. Start
+
+```bash
+make build       # build the Docker image
+make up          # start the gateway
+```
+
+`make up` prints a dashboard URL with your token and instructions for first-time setup — just open the link and follow the prompt.
 
 ## Usage
 

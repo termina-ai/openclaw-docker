@@ -82,8 +82,11 @@ RUN openclaw onboard --non-interactive \
     --skip-ui
 
 # Docker-specific: allow token auth over plain HTTP from Docker's network
+# and skip device pairing (browser connects from Docker bridge IP, not loopback,
+# so the gateway sees it as a remote device and requires pairing)
 RUN openclaw config set gateway.controlUi.enabled true \
-    && openclaw config set gateway.controlUi.allowInsecureAuth true
+    && openclaw config set gateway.controlUi.allowInsecureAuth true \
+    && openclaw config set gateway.controlUi.dangerouslyDisableDeviceAuth true
 
 # Fix permissions and create credentials dir
 RUN chmod 700 /home/openclaw/.openclaw \
