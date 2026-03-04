@@ -30,6 +30,10 @@ RUN apt-get update && apt-get install -y \
     nano \
     openssh-client \
     rsync \
+    # socat relays the browser-extension port (gateway+3) from 0.0.0.0 to
+    # 127.0.0.1 inside the container — the relay server hardcodes loopback,
+    # so Docker port-forwarding can't reach it without this bridge.
+    socat \
     httpie \
     python3 \
     python3-pip \

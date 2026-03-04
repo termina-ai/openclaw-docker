@@ -7,6 +7,10 @@ services:
     restart: unless-stopped
     ports:
       - "18789:18789"
+      # Browser extension relay: the relay server (gateway+3 = 18792) binds to
+      # 127.0.0.1 inside the container. A socat bridge on container port 18794
+      # forwards to it, so we map host 18792 → container 18794.
+      - "18792:18794"
     volumes:
       - ./config:/home/openclaw/.openclaw
       - ./workspaces:/home/openclaw/workspaces

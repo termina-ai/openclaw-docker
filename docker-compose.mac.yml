@@ -5,3 +5,5 @@ services:
     ports:
       !override
       - "127.0.0.1:18789:18789"
+      # Browser extension relay — see docker-compose.yml for explanation.
+      - "127.0.0.1:18792:18794"
