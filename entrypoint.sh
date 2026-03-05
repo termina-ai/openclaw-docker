@@ -78,5 +78,17 @@ fi
 # HOST_UID != 1000 and Docker Desktop's VirtioFS is in play.
 chown -R "$HOST_UID:$HOST_GID" /home/openclaw
 
+# --- Browser-extension relay (port 18792) ---
+# The browser control server hardcodes its bind to 127.0.0.1, which makes it
+# unreachable via Docker's port-forwarding (connections arrive from the bridge
+# IP, not loopback). We run a socat relay on an adjacent port (18794) bound to
+# 0.0.0.0 that forwards into the loopback listener. docker-compose maps
+# host 18792 → container 18794 → socat → 127.0.0.1:18792.
+RELAY_PORT="${OPENCLAW_RELAY_PORT:-18792}"
+SOCAT_PORT="$((RELAY_PORT + 2))"
+gosu openclaw socat \
+  TCP-LISTEN:"$SOCAT_PORT",fork,bind=0.0.0.0,reuseaddr \
+  TCP:127.0.0.1:"$RELAY_PORT" &
+
 # Drop to openclaw user and exec the CMD
 exec gosu openclaw "$@"
