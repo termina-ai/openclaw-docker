@@ -72,6 +72,9 @@ if [ -n "$OPENCLAW_MODEL" ]; then
   gosu openclaw openclaw models set "$OPENCLAW_MODEL" 2>/dev/null || true
 fi
 
+# --- Ensure npm global prefix dir exists ---
+mkdir -p /home/openclaw/.npm-global
+
 # --- Fix ownership after all root-level modifications ---
 # Must run after config patching (which runs as root) so files end up
 # owned by the openclaw user, not root. Critical on macOS where

@@ -51,12 +51,13 @@ RUN useradd -m -s /bin/bash openclaw
 RUN npm install -g openclaw@latest
 
 ENV HOME=/home/openclaw
-ENV PATH="/usr/local/bin:/home/openclaw/.local/bin:/home/openclaw/.openclaw/bin:${PATH}"
+ENV NPM_CONFIG_PREFIX=/home/openclaw/.npm-global
+ENV PATH="/home/openclaw/.npm-global/bin:/usr/local/bin:/home/openclaw/.local/bin:/home/openclaw/.openclaw/bin:${PATH}"
 
 RUN openclaw --version
 
 # Set up directories and ownership
-RUN mkdir -p /home/openclaw/.openclaw /home/openclaw/workspaces/main \
+RUN mkdir -p /home/openclaw/.openclaw /home/openclaw/workspaces/main /home/openclaw/.npm-global \
     && chown -R openclaw:openclaw /home/openclaw
 
 # Copy entrypoint (runs as root, fixes permissions, then drops to openclaw user)
