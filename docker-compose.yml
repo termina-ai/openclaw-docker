@@ -12,9 +12,9 @@ services:
       # forwards to it, so we map host 18792 → container 18794.
       - "18792:18794"
     volumes:
-      # Persist the entire home directory (npm globals, credentials, etc.) across containers
-      - openclaw-home:/home/openclaw
-      # Bind mounts punch through the home volume for host-accessible config and workspaces
+      # All bind mounts — no named volumes, so everything maps to your local disk.
+      # ./config and ./workspaces overlay their respective paths inside ./home.
+      - ./home:/home/openclaw
       - ./config:/home/openclaw/.openclaw
       - ./workspaces:/home/openclaw/workspaces
     env_file:
@@ -34,9 +34,10 @@ services:
     profiles:
       - cli
     volumes:
-      - openclaw-home:/home/openclaw
+      - ./home:/home/openclaw
       - ./config:/home/openclaw/.openclaw
       - ./workspaces:/home/openclaw/workspaces
+
     env_file:
       - .env
     environment:
@@ -45,6 +46,3 @@ services:
     stdin_open: true
     tty: true
     entrypoint: ["openclaw"]
-
-volumes:
-  openclaw-home:

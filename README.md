@@ -93,8 +93,15 @@ make clean-all   # Also remove Docker images
 
 ## Storage
 
-- **Config, credentials, memory** — stored inside the container (persists across restarts, destroyed on `make clean`)
-- **Agent workspaces** — bind-mounted from `./workspaces/` on the host to `/home/openclaw/workspaces` in the container
+All container state is bind-mounted to your local disk — no Docker named volumes are used.
+
+| Host path        | Container path                    | Purpose                                  |
+|------------------|-----------------------------------|------------------------------------------|
+| `./home/`        | `/home/openclaw`                  | Full home dir (npm globals, dotfiles, etc.) |
+| `./config/`      | `/home/openclaw/.openclaw`        | OpenClaw config, credentials, memory     |
+| `./workspaces/`  | `/home/openclaw/workspaces`       | Agent workspaces                         |
+
+`./config/` and `./workspaces/` overlay their respective paths inside `./home/`. This means changes in `./config/` are what the container actually sees at `~/.openclaw`, not whatever is in `./home/.openclaw/`.
 
 Each agent gets its own subdirectory:
 
