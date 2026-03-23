@@ -48,7 +48,10 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 RUN useradd -m -s /bin/bash openclaw
 
 # Install OpenClaw via npm (bypasses openclaw.ai install script)
-RUN npm install -g openclaw@latest
+# TODO: Switch back to openclaw@latest once openclaw#52808 is fixed.
+# v2026.3.22 ships without Control UI assets and v2026.3.7+ requires
+# explicit gateway.auth.mode. Pinned to last known good version.
+RUN npm install -g openclaw@2026.3.13
 
 ENV HOME=/home/openclaw
 ENV NPM_CONFIG_PREFIX=/home/openclaw/.npm-global

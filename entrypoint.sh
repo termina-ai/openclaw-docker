@@ -35,7 +35,10 @@ if [ -f "$CONFIG" ]; then
   node -e "
     const fs = require('fs');
     const cfg = JSON.parse(fs.readFileSync('$CONFIG', 'utf8'));
+    // Ensure gateway.auth exists (openclaw doctor/update can drop it)
+    if (!cfg.gateway.auth) cfg.gateway.auth = {};
     if (process.env.OPENCLAW_GATEWAY_TOKEN) {
+      cfg.gateway.auth.mode = 'token';
       cfg.gateway.auth.token = process.env.OPENCLAW_GATEWAY_TOKEN;
     }
     // Docker NAT rewrites the source IP, so the gateway sees connections from

@@ -224,6 +224,10 @@ Add this into our SKILLS.md file for all tasks:
 - **Minimal Impact**: Changes should only touch what's necessary. Avoid introducing bugs.
 ```
 
+## Known Issues
+
+- **OpenClaw version pinned to v2026.3.13** — v2026.3.22 ships without Control UI assets ([openclaw#52808](https://github.com/openclaw/openclaw/issues/52808)) and v2026.3.7+ can drop the `gateway.auth` config block ([openclaw#13835](https://github.com/openclaw/openclaw/issues/13835)). Switch back to `openclaw@latest` in the Dockerfile once these are resolved.
+
 ## Starter Prompts
 - "Help me set up google calendar access"
 
