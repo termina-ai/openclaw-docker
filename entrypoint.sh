@@ -35,7 +35,8 @@ if [ -f "$CONFIG" ]; then
   node -e "
     const fs = require('fs');
     const cfg = JSON.parse(fs.readFileSync('$CONFIG', 'utf8'));
-    // Ensure gateway.auth exists (openclaw doctor/update can drop it)
+    // Ensure gateway and gateway.auth exist (openclaw doctor/update can drop them)
+    if (!cfg.gateway) cfg.gateway = {};
     if (!cfg.gateway.auth) cfg.gateway.auth = {};
     if (process.env.OPENCLAW_GATEWAY_TOKEN) {
       cfg.gateway.auth.mode = 'token';
