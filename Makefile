@@ -39,15 +39,29 @@ build:
 # Start the OpenClaw gateway in the background
 up:
 	$(COMPOSE) up -d
+	@echo "Waiting for gateway to be ready..."
+	@for i in $$(seq 1 30); do \
+		if curl -sf http://localhost:18789/ >/dev/null 2>&1; then break; fi; \
+		sleep 1; \
+	done
 	@TOKEN=$$(grep OPENCLAW_GATEWAY_TOKEN .env 2>/dev/null | cut -d= -f2); \
-	echo ""; \
-	echo "OpenClaw is running."; \
-	echo ""; \
-	echo "  Dashboard: http://localhost:18789/?token=$$TOKEN"; \
-	echo ""; \
-	echo "First time? Paste this token into the OpenClaw UI settings when prompted:"; \
-	echo "  $$TOKEN"; \
-	echo ""
+	if curl -sf http://localhost:18789/ >/dev/null 2>&1; then \
+		echo ""; \
+		echo "OpenClaw is running."; \
+		echo ""; \
+		echo "  Dashboard: http://localhost:18789/?token=$$TOKEN"; \
+		echo ""; \
+		echo "First time? Paste this token into the OpenClaw UI settings when prompted:"; \
+		echo "  $$TOKEN"; \
+		echo ""; \
+	else \
+		echo ""; \
+		echo "OpenClaw started but the gateway is not responding yet."; \
+		echo "Run 'make logs' to check progress, then try:"; \
+		echo ""; \
+		echo "  http://localhost:18789/?token=$$TOKEN"; \
+		echo ""; \
+	fi
 
 # Start the OpenClaw gateway in the foreground (with logs)
 up-fg:
