@@ -2,10 +2,12 @@
 set -e
 
 CONFIG="/home/openclaw/.openclaw/openclaw.json"
-SEED="/home/openclaw/.openclaw-seed"
+SEED="/opt/openclaw/seed"
 
 # --- First-run seed ---
-# Bind mount starts empty; copy baked config from the image.
+# The ./home bind mount replaces /home/openclaw at runtime, hiding anything
+# baked into that path during docker build. The seed lives under /opt so it
+# stays reachable. Copy it into the (empty) config bind mount on first run.
 if [ ! -f "$CONFIG" ] && [ -d "$SEED" ]; then
   cp -a "$SEED"/. /home/openclaw/.openclaw/
 fi
@@ -38,6 +40,7 @@ if [ -f "$CONFIG" ]; then
     // Ensure gateway and gateway.auth exist (openclaw doctor/update can drop them)
     if (!cfg.gateway) cfg.gateway = {};
     cfg.gateway.mode = 'local';
+    cfg.gateway.bind = 'lan';
     if (!cfg.gateway.auth) cfg.gateway.auth = {};
     if (process.env.OPENCLAW_GATEWAY_TOKEN) {
       cfg.gateway.auth.mode = 'token';

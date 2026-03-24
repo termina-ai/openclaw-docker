@@ -103,11 +103,12 @@ RUN chmod 700 /home/openclaw/.openclaw \
 # Run doctor to fix any remaining issues
 RUN openclaw doctor --non-interactive --repair || true
 
-# Save baked config as seed — bind mount starts empty, entrypoint copies on first run
-RUN cp -a /home/openclaw/.openclaw /home/openclaw/.openclaw-seed
-
 # Switch back to root — entrypoint fixes bind mount permissions then drops to openclaw via gosu
 USER root
+
+# Save baked config as seed under /opt (not /home) so the ./home bind mount
+# can't hide it. The entrypoint copies it into the config bind mount on first run.
+RUN cp -a /home/openclaw/.openclaw /opt/openclaw/seed
 
 EXPOSE 18789
 
